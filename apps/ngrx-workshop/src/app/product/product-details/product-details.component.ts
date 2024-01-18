@@ -9,7 +9,8 @@ import { ActivatedRoute, ParamMap } from "@angular/router";
 import { Rating } from "@angular-monorepo/api-interfaces";
 import { BehaviorSubject, filter, map, shareReplay, switchMap } from "rxjs";
 
-import { CartService } from "../../cart/cart.service";
+import { Store } from "@ngrx/store";
+import { productDetailsActions } from "./actions";
 import { ProductService } from "../product.service";
 import { RatingService } from "../rating.service";
 import { MatButtonModule } from "@angular/material/button";
@@ -56,7 +57,7 @@ export class ProductDetailsComponent {
     private readonly router: ActivatedRoute,
     private readonly productService: ProductService,
     private readonly ratingService: RatingService,
-    private readonly cartService: CartService,
+    private readonly store: Store,
     private readonly location: Location
   ) {
     this.productId$
@@ -83,7 +84,7 @@ export class ProductDetailsComponent {
   }
 
   addToCart(productId: string) {
-    this.cartService.addProduct(productId);
+    this.store.dispatch(productDetailsActions.addToCart({ productId }));
   }
 
   back() {

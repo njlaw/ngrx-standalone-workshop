@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { BasicProduct, Product } from '@angular-monorepo/api-interfaces';
 import { data } from '@angular-monorepo/mock-data';
 
@@ -11,6 +11,9 @@ function stripDescription(originalData: Product[]): BasicProduct[] {
 @Injectable()
 export class ProductService {
   getProductList(): BasicProduct[] {
+    if (Math.random() < 0.25)
+      throw new InternalServerErrorException('ProductService Simulated Statistical Failure')
+
     return stripDescription(data);
   }
 

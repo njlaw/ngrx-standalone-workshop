@@ -6,6 +6,8 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { RouterLink } from "@angular/router";
 import { AsyncPipe } from "@angular/common";
+import { Store } from '@ngrx/store';
+import { selectCartItemsCount } from '../cart.selectors';
 
 @Component({
   selector: "ngrx-workshop-cart",
@@ -17,18 +19,17 @@ import { AsyncPipe } from "@angular/common";
     <button type="button" mat-icon-button routerLink="cart">
       <mat-icon>shopping_cart</mat-icon>
       <span class="counter-background"></span>
-      <span class="counter">{{ (cartItemsCounter$ | async) || 0 }}</span>
+      <span class="counter">{{ cartItemsCounter$ | async }}</span>
     </button>
   `,
 })
 export class CartIconComponent {
-  cartItemsCounter$ = this.cartService.cartItems$.pipe(
-    map((cartItems) =>
-      cartItems.reduce((acc, { quantity }) => acc + quantity, 0)
-    )
-  );
+  cartItemsCounter$ = this.store.select(selectCartItemsCount);
 
-  constructor(private readonly cartService: CartService) {
+  constructor(
+    private readonly cartService: CartService,
+    private readonly store: Store
+  ) {
     this.cartService.getCartProducts();
   }
 }

@@ -18,6 +18,8 @@ import { StarsComponent } from "../../common/stars/stars.component";
 import { SpinnerComponent } from "../../common/spinner/spinner.component";
 import { MatCardModule } from "@angular/material/card";
 import { ReviewsComponent } from "./reviews/reviews.component";
+import { Store } from '@ngrx/store';
+import { productDetailsActions } from './actions';
 
 @Component({
   selector: "ngrx-workshop-product-details",
@@ -54,6 +56,7 @@ export class ProductDetailsComponent {
 
   constructor(
     private readonly router: ActivatedRoute,
+    private readonly store: Store,
     private readonly productService: ProductService,
     private readonly ratingService: RatingService,
     private readonly cartService: CartService,
@@ -83,6 +86,7 @@ export class ProductDetailsComponent {
   }
 
   addToCart(productId: string) {
+    this.store.dispatch(productDetailsActions.addToCard({ productId }));
     this.cartService.addProduct(productId);
   }
 

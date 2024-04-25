@@ -3,9 +3,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { inject } from '@angular/core';
 import { productApiActions } from '../product/actions';
 import { tap } from 'rxjs';
+import { cartActions } from '../cart/actions';
 
 export const handleFetchErrors = createEffect((action$ = inject(Actions), snackBar = inject(MatSnackBar)) => action$.pipe(
-  ofType(productApiActions.productsFetchError),
+  ofType(
+    cartActions.fetchCartItemsError,
+    productApiActions.productsFetchError,
+  ),
   tap(({ errorMessage }) => snackBar.open(errorMessage, 'Error', {
     duration: 2500,
   })),

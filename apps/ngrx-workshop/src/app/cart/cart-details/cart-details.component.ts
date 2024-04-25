@@ -10,6 +10,10 @@ import { MatCardModule } from "@angular/material/card";
 import { MatButtonModule } from "@angular/material/button";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { AsyncPipe, CommonModule, CurrencyPipe } from "@angular/common";
+import { Store } from '@ngrx/store';
+import { selectCartItems } from '../cart.selectors';
+import { cartActions } from '../actions';
+import { cartDetailsActions } from './actions';
 
 @Component({
   selector: "ngrx-workshop-cart-details",
@@ -28,7 +32,7 @@ import { AsyncPipe, CommonModule, CurrencyPipe } from "@angular/common";
   ],
 })
 export class CartDetailsComponent {
-  cartProducts$: Observable<CartProduct[]> = this.cartService.cartItems$.pipe(
+  cartProducts$: Observable<CartProduct[]> = this.store.select(selectCartItems).pipe(
     switchMap((cartItems) =>
       from(cartItems).pipe(
         mergeMap((item) =>
@@ -53,12 +57,13 @@ export class CartDetailsComponent {
   );
 
   constructor(
+    private readonly store: Store,
     private readonly cartService: CartService,
     private readonly productService: ProductService,
     private readonly snackBar: MatSnackBar,
     private readonly router: Router
   ) {
-    this.cartService.getCartProducts();
+    this.store.dispatch(cartDetailsActions.pageOpened());
   }
 
   removeOne(id: string) {
@@ -78,6 +83,7 @@ export class CartDetailsComponent {
       .subscribe((isSuccess) => {
         if (isSuccess) {
           this.cartService.getCartProducts();
+          this.store.dispatch(cartDetailsActions.purchaseSuccess());
           this.router.navigateByUrl("");
         } else {
           this.snackBar.open("Purchase error", "Error", {

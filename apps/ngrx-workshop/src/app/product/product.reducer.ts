@@ -1,27 +1,31 @@
-import { createReducer, on } from '@ngrx/store';
+import { createFeature, createReducer, on } from '@ngrx/store';
 import { ProductModel } from '../model/product';
 import { productApiActions } from './actions';
-
-export interface GlobalState {
-  product: ProductState;
-}
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
 
 export interface ProductState {
-  products: ProductModel[];
+  products: EntityState<ProductModel>;
 }
 
+export const productAdapter = createEntityAdapter<ProductModel>();
+
 const initialState: ProductState = {
-  products: [],
+  products: productAdapter.getInitialState(),
 };
 
-export const productReducer = createReducer<ProductState>(
-  initialState,
-  on(productApiActions.productsFetchSuccess, (state, { products }) => ({
-    ...state,
-    products: [...products],
-  })),
-  on(productApiActions.productsFetchError, state => ({
-    ...state,
-    products: [],
-  })),
-);
+export const productFeature = createFeature({
+  name: 'product',
+  reducer: createReducer(
+    initialState,
+    on(productApiActions.productsFetchSuccess, (state, { products }) => ({
+      ...state,
+      products: productAdapter.upsertMany(products, state.products),
+    })),
+    on(productApiActions.singleProductFetchedSuccess, (state, { product }) => {
+      return {
+        ...state,
+        products: productAdapter.upsertOne(product, state.products),
+      };
+    }),
+  ),
+});

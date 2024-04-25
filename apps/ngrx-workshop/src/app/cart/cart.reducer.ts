@@ -15,7 +15,7 @@ const initialState: CartState = {
 
 export const cartReducer = createReducer(
   initialState,
-  on(productDetailsActions.addToCard, (state, { productId }) => {
+  on(productDetailsActions.addToCart, (state, { productId }) => {
     const cartItemsClone = [ ...state.cartItems];
     const cartItemIndex = cartItemsClone.findIndex(cartItem => cartItem.productId === productId);
 
@@ -28,6 +28,22 @@ export const cartReducer = createReducer(
       cartItemsClone.splice(cartItemIndex, 1, {
         productId,
         quantity: cartItemsClone[cartItemIndex].quantity + 1,
+      });
+    }
+
+    return {
+      ...state,
+      cartItems: cartItemsClone,
+    };
+  }),
+  on(cartActions.addToCartError, (state, { productId }) => {
+    const cartItemsClone = [ ...state.cartItems];
+    const itemIndex = cartItemsClone.findIndex(cartItem => cartItem.productId === productId);
+
+    if (itemIndex !== -1) {
+      cartItemsClone.splice(itemIndex, 1, {
+        productId,
+        quantity: cartItemsClone[itemIndex].quantity - 1,
       });
     }
 

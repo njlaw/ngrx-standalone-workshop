@@ -11,7 +11,7 @@ function stripDescription(originalData: Product[]): BasicProduct[] {
 @Injectable()
 export class ProductService {
   getProductList(): BasicProduct[] {
-    if (Math.random() < 0.25)
+    if (Math.random() < 0.05)
       throw new InternalServerErrorException('ProductService Simulated Statistical Failure')
 
     return stripDescription(data);

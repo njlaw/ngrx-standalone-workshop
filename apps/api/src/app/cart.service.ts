@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CartItem } from '@angular-monorepo/api-interfaces';
 
 @Injectable()
@@ -10,6 +10,9 @@ export class CartService {
   }
 
   addProduct(id: string): CartItem[] {
+    if (Math.random() < 0.25)
+      throw new InternalServerErrorException('Simulated CartService::addProduct Error');
+
     const item = this.getItem(id);
     if (item) {
       item.quantity += 1;

@@ -10,7 +10,6 @@ import { SpinnerComponent } from "../../common/spinner/spinner.component";
 import { RouterLink } from "@angular/router";
 import { MatCardModule } from "@angular/material/card";
 import { AsyncPipe, CommonModule } from "@angular/common";
-import { GlobalState } from '../product.reducer';
 import { Store } from '@ngrx/store';
 import { selectProducts } from '../product.selectors';
 import * as actions from './actions';
@@ -34,7 +33,7 @@ export class ProductListComponent implements OnInit {
   customerRatings$?: Observable<{ [productId: string]: Rating }>;
 
   constructor(
-    private readonly store: Store<GlobalState>,
+    private readonly store: Store,
     private readonly ratingService: RatingService
   ) {}
 

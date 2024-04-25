@@ -1,19 +1,22 @@
 import { ChangeDetectionStrategy, Component } from "@angular/core";
-import { from, map, mergeMap, Observable, switchMap, toArray } from "rxjs";
+import { map } from "rxjs";
 
 import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import { CartProduct } from "../../model/product";
-import { ProductService } from "../../product/product.service";
 import { CartService } from "../cart.service";
 import { MatCardModule } from "@angular/material/card";
 import { MatButtonModule } from "@angular/material/button";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { AsyncPipe, CommonModule, CurrencyPipe } from "@angular/common";
-import { Store } from '@ngrx/store';
-import { selectCartItems } from '../cart.selectors';
-import { cartActions } from '../actions';
+import { createSelector, Store } from '@ngrx/store';
+import { selectCartProducts, selectCartTotal } from '../cart.selectors';
 import { cartDetailsActions } from './actions';
+
+export const selectCartDetailsVm = createSelector({
+  products: selectCartProducts,
+  total: selectCartTotal,
+});
 
 @Component({
   selector: "ngrx-workshop-cart-details",
@@ -32,34 +35,14 @@ import { cartDetailsActions } from './actions';
   ],
 })
 export class CartDetailsComponent {
-  cartProducts$: Observable<CartProduct[]> = this.store.select(selectCartItems).pipe(
-    switchMap((cartItems) =>
-      from(cartItems).pipe(
-        mergeMap((item) =>
-          this.productService
-            .getProduct(item.productId)
-            .pipe(map((product) => ({ ...product, quantity: item.quantity })))
-        ),
-        toArray()
-      )
-    )
-  );
+  cartDetailsVm$ = this.store.select(selectCartDetailsVm);
+  cartProducts$ = this.cartDetailsVm$.pipe(map(vm => vm.products));
 
-  total$ = this.cartProducts$.pipe(
-    map(
-      (cartProducts) =>
-        cartProducts &&
-        cartProducts.reduce(
-          (acc, product) => acc + product.price * product.quantity,
-          0
-        )
-    )
-  );
+  total$ = this.cartDetailsVm$.pipe(map(vm => vm.total));
 
   constructor(
     private readonly store: Store,
     private readonly cartService: CartService,
-    private readonly productService: ProductService,
     private readonly snackBar: MatSnackBar,
     private readonly router: Router
   ) {

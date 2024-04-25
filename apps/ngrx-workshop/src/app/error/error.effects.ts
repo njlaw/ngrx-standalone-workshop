@@ -7,8 +7,10 @@ import { cartActions } from '../cart/actions';
 
 export const handleFetchErrors = createEffect((action$ = inject(Actions), snackBar = inject(MatSnackBar)) => action$.pipe(
   ofType(
+    cartActions.addToCartError,
     cartActions.fetchCartItemsError,
     productApiActions.productsFetchError,
+    productApiActions.singleProductFetchedError,
   ),
   tap(({ errorMessage }) => snackBar.open(errorMessage, 'Error', {
     duration: 2500,

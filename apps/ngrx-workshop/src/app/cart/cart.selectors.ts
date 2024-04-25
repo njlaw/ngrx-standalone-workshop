@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { CART_FEATURE_KEY, CartState } from './cart.reducer';
-import { selectProducts } from '../product/product.selectors';
+import { selectProductEntities } from '../product/product.selectors';
 import { CartProduct } from '../model/product';
 
 export const cartFeature = createFeatureSelector<CartState>(CART_FEATURE_KEY);
@@ -9,11 +9,11 @@ export const selectCartItems = createSelector(cartFeature, state => state.cartIt
 export const selectCartItemsCount = createSelector(selectCartItems, cartItems => cartItems.reduce((sum, cartItem) => sum + cartItem.quantity, 0));
 
 export const selectCartProducts = createSelector(
-  selectProducts,
+  selectProductEntities,
   selectCartItems,
-  (products, cartItems) => {
+  (productEntities, cartItems) => {
     return cartItems.map(cartItem => {
-      const product = products.find(p => p.id === cartItem.productId);
+      const product = productEntities[cartItem.productId];
       if (product == null) return undefined;
       return {
         ...product,
